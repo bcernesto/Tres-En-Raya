@@ -5,38 +5,41 @@
 @end
 
 @implementation ViewController
-NSMutableArray *buttonsArray;
-UIButton *newButton;
-int player=1;
+NSMutableArray *arrayDeBotones;
+UIButton *nuevoBoton;
+UIView *menu;
+float anchoVentana;
+float altoVentana;
+int jugador=1;
 int jugada=0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-	[self addButtons];
+    anchoVentana=self.view.bounds.size.width;
+    altoVentana=self.view.bounds.size.height;
+	[self agregarBotones];
     }
 
-	- (void) addButtons{
-float buttonWidth=self.view.bounds.size.width/3;
-float buttonHeight=self.view.bounds.size.height/3;
-        buttonsArray = [[NSMutableArray alloc] init];
+	- (void) agregarBotones{
+float anchoBoton=anchoVentana/3;
+float altoBoton=altoVentana/3;
+        arrayDeBotones = [[NSMutableArray alloc] init];
 int x=0;
 int y=0;
 for (int i=0; i<9; i++) {
-    newButton = [[UIButton alloc] initWithFrame:CGRectMake(buttonWidth*x+1, buttonHeight*y+1, buttonWidth, buttonHeight)];
-[newButton setBackgroundColor:[UIColor blueColor]];
-    [newButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [newButton setTitleColor:[UIColor redColor] forState:UIControlStateHighlighted];
-	// [newButton setTitle:@"" forState:UIControlStateNormal];
-    [newButton setAccessibilityLabel:@"Casilla vacía"];
-    [newButton addTarget:self action:@selector(buttonTouched:) forControlEvents:UIControlEventTouchUpInside];
-	newButton.tag = i;
-newButton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
-    newButton.layer.masksToBounds = YES;
-	newButton.layer.cornerRadius = 5;
-    newButton.layer.borderWidth = 1;
-    newButton.layer.borderColor = [[UIColor blackColor] CGColor];
-                 				 [buttonsArray addObject:newButton];
+    nuevoBoton = [[UIButton alloc] initWithFrame:CGRectMake(anchoBoton*x+1, altoBoton*y+1, anchoBoton, altoBoton)];
+[nuevoBoton setBackgroundColor:[UIColor blueColor]];
+    [nuevoBoton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [nuevoBoton setTitleColor:[UIColor redColor] forState:UIControlStateHighlighted];
+	    [nuevoBoton setAccessibilityLabel:@"Casilla vacía"];
+    [nuevoBoton addTarget:self action:@selector(botonPulsado:) forControlEvents:UIControlEventTouchUpInside];
+	nuevoBoton.tag = i;
+nuevoBoton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+    nuevoBoton.layer.masksToBounds = YES;
+	nuevoBoton.layer.cornerRadius = 5;
+    nuevoBoton.layer.borderWidth = 1;
+    nuevoBoton.layer.borderColor = [[UIColor blackColor] CGColor];
+                 				 [arrayDeBotones addObject:nuevoBoton];
 				 if(x==2){
 				 x=0;
 				 y=y+1;
@@ -44,14 +47,14 @@ newButton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
 				 x=x+1;
 				 }
 				 }
-				 for(UIButton *button in buttonsArray){
-    [self.view addSubview:button];
+				 for(UIButton *boton in arrayDeBotones){
+    [self.view addSubview:boton];
 }
 				 }
 
-				 -(void) buttonTouched:(UIButton *) sender {
-				 if([self buttonTitle:sender.tag]==nil){
-    switch(player){
+				 -(void) botonPulsado:(UIButton *) sender {
+				 if((jugador>0)&&([self tituloBoton:sender.tag]==nil)){
+    switch(jugador){
         case 1:
             [sender setAccessibilityLabel:@"X"];
             [sender setTitle:@"X" forState:UIControlStateNormal];
@@ -62,69 +65,107 @@ newButton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
 			                        						            break;
     }
                      jugada=jugada+1;
-                     int resultado=[self checkPartida];
+                     int resultado=[self ComprobarPartida];
 	if(resultado>0) {
         [self finPartida:resultado];
 	}else{
-	[self nextTurn];
+	[self turnoSiguiente];
 	}
 	}
 }
 
--(void) nextTurn{
-switch(player){
+-(void) turnoSiguiente{
+switch(jugador){
 case 1:
-player=2;
+jugador=2;
 break;
 case 2:
-player=1;
+jugador=1;
         break;
         }
 }
 
-- (int) checkPartida{
-    if (([[self buttonTitle:0] isEqual:[self buttonTitle:1]])&&([[self buttonTitle:1] isEqual:[self buttonTitle:2]])) return 1;
-	if (([[self buttonTitle:3] isEqual:[self buttonTitle:4]])&&([[self buttonTitle:4] isEqual:[self buttonTitle:5]])) return 1;
-	if (([[self buttonTitle:6] isEqual:[self buttonTitle:7]])&&([[self buttonTitle:7] isEqual:[self buttonTitle:8]])) return 1;
-	if (([[self buttonTitle:0] isEqual:[self buttonTitle:3]])&&([[self buttonTitle:3] isEqual:[self buttonTitle:6]])) return 1;
-	if (([[self buttonTitle:1] isEqual:[self buttonTitle:4]])&&([[self buttonTitle:4] isEqual:[self buttonTitle:7]])) return 1;
-	if (([[self buttonTitle:2] isEqual:[self buttonTitle:5]])&&([[self buttonTitle:5] isEqual:[self buttonTitle:8]])) return 1;
-	if (([[self buttonTitle:0] isEqual:[self buttonTitle:4]])&&([[self buttonTitle:4] isEqual:[self buttonTitle:8]])) return 1;
-	if (([[self buttonTitle:2] isEqual:[self buttonTitle:4]])&&([[self buttonTitle:4] isEqual:[self buttonTitle:6]])) return 1;
+- (int) ComprobarPartida{
+    if (([[self tituloBoton:0] isEqual:[self tituloBoton:1]])&&([[self tituloBoton:1] isEqual:[self tituloBoton:2]])) return 1;
+	if (([[self tituloBoton:3] isEqual:[self tituloBoton:4]])&&([[self tituloBoton:4] isEqual:[self tituloBoton:5]])) return 1;
+	if (([[self tituloBoton:6] isEqual:[self tituloBoton:7]])&&([[self tituloBoton:7] isEqual:[self tituloBoton:8]])) return 1;
+	if (([[self tituloBoton:0] isEqual:[self tituloBoton:3]])&&([[self tituloBoton:3] isEqual:[self tituloBoton:6]])) return 1;
+	if (([[self tituloBoton:1] isEqual:[self tituloBoton:4]])&&([[self tituloBoton:4] isEqual:[self tituloBoton:7]])) return 1;
+	if (([[self tituloBoton:2] isEqual:[self tituloBoton:5]])&&([[self tituloBoton:5] isEqual:[self tituloBoton:8]])) return 1;
+	if (([[self tituloBoton:0] isEqual:[self tituloBoton:4]])&&([[self tituloBoton:4] isEqual:[self tituloBoton:8]])) return 1;
+	if (([[self tituloBoton:2] isEqual:[self tituloBoton:4]])&&([[self tituloBoton:4] isEqual:[self tituloBoton:6]])) return 1;
     if(jugada==9) return 2;
 	return 0;
 	}
 
-	-(NSString*) buttonTitle:(int) nButton{
-for(UIButton *button in buttonsArray){
-    if(button.tag==nButton) return button.currentTitle;
+	-(NSString*) tituloBoton:(int) tagBoton{
+for(UIButton *boton in arrayDeBotones){
+    if(boton.tag==tagBoton) return boton.currentTitle;
 }
 				 return NULL;
 				 }
 
 -(void) finPartida:(int) resultado{
-    NSString *message;
-if(resultado==1) message=[NSString stringWithFormat:@"Ha ganado el jugador %i",player];
-if (resultado==2) message=@"La partida ha finalizado con un empate";
+    NSString *mensajeAlerta;
+if(resultado==1) mensajeAlerta=[NSString stringWithFormat:@"Ha ganado el jugador %i",jugador];
+if (resultado==2) mensajeAlerta=@"La partida ha finalizado con un empate";
 	UIAlertController *alerta = [UIAlertController 
 	alertControllerWithTitle:@"¡Partida terminada!" 
-	message:message
+	message:mensajeAlerta
 	preferredStyle:UIAlertControllerStyleAlert];
-UIAlertAction *ok = [UIAlertAction 
-actionWithTitle:@"OK" 
+UIAlertAction *ok=[UIAlertAction 
+actionWithTitle:@"Aceptar" 
 style:UIAlertActionStyleDefault 
 handler:^(UIAlertAction *action) 
 {
 [alerta dismissViewControllerAnimated:YES completion:nil];
-player=0;
+[self menuPartida:mensajeAlerta];
 }];
 [alerta addAction:ok];
 [self presentViewController:alerta animated:YES completion:nil];
 }
 
+-(void) menuPartida:(NSString*) mensaje{
+jugador=0;
+jugada=0;
+for(UIButton *boton in arrayDeBotones){
+[boton removeFromSuperview];
+}
+[arrayDeBotones removeAllObjects];
+menu = [[UIView alloc]
+        initWithFrame:CGRectMake(20,20,anchoVentana-40,altoVentana-40)];
+    	float anchoVistaMenu=menu.bounds.size.width;
+	float altoVistaMenu=menu.bounds.size.height;
+UILabel *MenuEtiqueta = [[UILabel alloc]
+initWithFrame:CGRectMake(0,0,anchoVistaMenu,altoVistaMenu/4*3)];
+MenuEtiqueta.text=[NSString stringWithFormat:@"Partida terminada. %@", mensaje];
+[menu addSubview:MenuEtiqueta];
+UIButton *menuBoton = [[UIButton alloc]
+initWithFrame:CGRectMake(0,altoVistaMenu/4*3+1,anchoVistaMenu,altoVistaMenu/4)];
+[menuBoton setBackgroundColor:[UIColor blueColor]];
+    [menuBoton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [menuBoton setTitleColor:[UIColor redColor] forState:UIControlStateHighlighted];
+	[menuBoton setTitle:@"Jugar de nuevo" forState:UIControlStateNormal];
+        [menuBoton addTarget:self action:@selector(jugarDeNuevo:) forControlEvents:UIControlEventTouchUpInside];
+	menuBoton.tag = 9;
+menuBoton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+    menuBoton.layer.masksToBounds = YES;
+	menuBoton.layer.cornerRadius = 5;
+    menuBoton.layer.borderWidth = 1;
+    menuBoton.layer.borderColor = [[UIColor blackColor] CGColor];
+[menu addSubview:menuBoton];
+		[self.view addSubview:menu];
+}
+
+-(void) jugarDeNuevo:(UIButton *) sender {
+[menu removeFromSuperview];
+[self agregarBotones];
+jugador=1;
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    
 }
 
 				 @end
