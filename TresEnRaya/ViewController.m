@@ -1,10 +1,12 @@
 #import "ViewController.h"
+#import "SoundManager.h";
 
 @interface ViewController ()
 
 @end
 
 @implementation ViewController
+
 NSMutableArray *arrayDeBotones;
 UIButton *nuevoBoton;
 UIView *menu;
@@ -18,7 +20,9 @@ int jugada=0;
     anchoVentana=self.view.bounds.size.width;
     altoVentana=self.view.bounds.size.height;
 	[self agregarBotones];
-    }
+	[[SoundManager sharedManager] setMusicVolume:0.2];
+			[[SoundManager sharedManager] playMusic:@"intro.mp3" looping:YES];
+			    }
 
 	- (void) agregarBotones{
 float anchoBoton=anchoVentana/3;
@@ -58,10 +62,12 @@ nuevoBoton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
         case 1:
             [sender setAccessibilityLabel:@"X"];
             [sender setTitle:@"X" forState:UIControlStateNormal];
+			[[SoundManager sharedManager] playSound:@"gato.mp3" looping:NO];
 			            						            break;
         case 2:
             [sender setAccessibilityLabel:@"O"];
             [sender setTitle:@"O" forState:UIControlStateNormal];
+			[[SoundManager sharedManager] playSound:@"perro.mp3" looping:NO];
 			                        						            break;
     }
                      jugada=jugada+1;
@@ -71,6 +77,8 @@ nuevoBoton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
 	}else{
 	[self turnoSiguiente];
 	}
+	}else{
+	[[SoundManager sharedManager] playSound:@"vaca.mp3" looping:NO];
 	}
 }
 
@@ -107,8 +115,16 @@ for(UIButton *boton in arrayDeBotones){
 
 -(void) finPartida:(int) resultado{
     NSString *mensajeAlerta;
-if(resultado==1) mensajeAlerta=[NSString stringWithFormat:@"Ha ganado el jugador %i",jugador];
-if (resultado==2) mensajeAlerta=@"La partida ha finalizado con un empate";
+switch(resultado){
+case 1:
+mensajeAlerta=[NSString stringWithFormat:@"Ha ganado el jugador %i",jugador];
+[[SoundManager sharedManager] playSound:@"aplausos.mp3" looping:NO];
+break;
+case 2:
+mensajeAlerta=@"La partida ha finalizado con un empate";
+[[SoundManager sharedManager] playSound:@"abucheo.mp3" looping:NO];
+break;
+}
 	UIAlertController *alerta = [UIAlertController 
 	alertControllerWithTitle:@"¡Partida terminada!" 
 	message:mensajeAlerta
@@ -128,6 +144,8 @@ handler:^(UIAlertAction *action)
 -(void) menuPartida:(NSString*) mensaje{
 jugador=0;
 jugada=0;
+[[SoundManager sharedManager] stopMusic:NO];
+[[SoundManager sharedManager] stopAllSounds:NO];
 for(UIButton *boton in arrayDeBotones){
 [boton removeFromSuperview];
 }
@@ -161,11 +179,11 @@ menuBoton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
 [menu removeFromSuperview];
 [self agregarBotones];
 jugador=1;
+[[SoundManager sharedManager] playMusic:@"intro.mp3" looping:YES];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    
-}
+  }
 
 				 @end
